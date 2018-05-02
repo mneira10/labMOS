@@ -1,0 +1,87 @@
+!************************************************************************************************
+! Problema: 
+!
+! Descripción del problema.
+ 
+! Parámetros:
+
+! Constantes
+! Conjuntos
+! Vectores
+!***********************************************************************************************
+
+model NombreDelProblema
+ uses "mmxprs"
+
+ forward function getProblemStatus(status: integer): string
+
+!DECLARACIONES Y PARAMETROS-------------------------------------------------------------------------------
+
+ declarations
+ 	!constants
+ 	n=1..8 	
+ 	!parameters
+ 	cost: array(n)of integer
+ 	progresivo: array(n)of integer
+ 	hit: array(n)of integer
+ 	!si esta la cancion en el lado A
+ 	x: array(n) of mpvar 
+ end-declarations
+ 
+ cost:: [4,5,3,2,4,3,5,4]
+ progresivo:: [ 1,0,1,0,1,0,0,1]
+ hit:: [0,1,0,1,0,1,0,1]
+  !FUNCIÓN OBJETIVO Y RESTRICCIONES-------------------------------------------------------------------------
+  !función objetivo
+  CostoTotal:=0
+ 
+  !Restricciones
+   !sum(i in A) valor(i)*x(i) = PRESUPUESTO       
+   
+   sum(i in n) x(i)*progresivo(i) = 2
+   sum(i in n) x(i)*hit(i) >= 3
+   
+   x(5)+x(6)>=1
+   1-x(5) >= x(6)
+   
+   2-x(5)+x(2) >=x(6)
+   
+   sum(i in n) x(i)*cost(i) >=14
+   sum(i in n) x(i)*cost(i)<=16
+   sum(i in n) (1-x(i))*cost(i) >=14
+   sum(i in n) (1-x(i))*cost(i)<=16
+   
+  ! forall(k in n|k<>4 and k<>2)
+   !	(sum(i in n ) x(i,k))-(sum(i in n)x(k,i)) = 0
+   
+
+   		
+   forall(i in n) x(i) is_binary
+  
+minimize(CostoTotal)
+ 
+ !RESULTADOS------------------------------------------------------------------------------------------------
+  
+  !Impresión del reporte
+  writeln("Solución del Problema")
+  writeln("Status    : ", getProblemStatus(getprobstat))
+  writeln("Gasto total: ", getobjval)
+     
+ forall(i in n| getsol(x(i))=1)
+	 writeln("La cancion ",i," esta en el lado A ")
+
+writeln("Las demas en el lado B")
+   
+    
+function getProblemStatus(status: integer):string
+   case status of
+	    XPRS_OPT: returned := "Solved to optimality."
+	    XPRS_UNF: returned := "Unfinished"
+	    XPRS_INF: returned := "Infeasible"
+	    XPRS_UNB: returned := "Unbounded"
+    else returned:= "Unknown Status"
+   end-case
+end-function
+  
+end-model
+

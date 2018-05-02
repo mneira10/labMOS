@@ -1,0 +1,94 @@
+!************************************************************************************************
+! Problema: 
+!
+! Descripción del problema.
+ 
+! Parámetros:
+
+! Constantes
+! Conjuntos
+! Vectores
+!***********************************************************************************************
+
+model NombreDelProblema
+ uses "mmxprs"
+
+ forward function getProblemStatus(status: integer): string
+
+!DECLARACIONES Y PARAMETROS-------------------------------------------------------------------------------
+
+ declarations
+ 	!constants
+ 	n=1..7 	
+ 	!parameters
+ 	x_s: array(n)of real
+ 	y_s: array(n)of real
+ 	costo: array(n,n) of real 
+ 	x: array(n,n) of mpvar 
+ end-declarations
+ 
+ x_s:: [20,22, 9, 3,21,29,14]
+ y_s:: [ 6, 1, 2,25,10, 2,12]
+ costo :: [ 9999,  9999, 9999,9999,9999,9999,9999,
+		    9999,  9999, 9999,9999,9999,9999,9999,
+		    9999,  9999, 9999,9999,9999,9999,9999,
+		    9999,  9999, 9999,9999,9999,9999,9999,
+		    9999,  9999, 9999,9999,9999,9999,9999,
+		    9999,  9999, 9999,9999,9999,9999,9999,
+		    9999,  9999, 9999,9999,9999,9999,9999]
+
+	forall(i in n)do
+		forall(j in n)do
+			temp:=((x_s(i)-x_s(j))^2 + (y_s(i)-y_s(j))^2)^0.5
+			if(temp<=20 and i<>j)then
+				costo(i,j) := temp
+				costo(j,i) := temp
+			end-if
+		end-do
+	end-do
+  !FUNCIÓN OBJETIVO Y RESTRICCIONES-------------------------------------------------------------------------
+  !función objetivo
+  CostoTotal:=sum(j in n) sum(i in n) costo(i,j)*x(i,j)
+ 
+  !Restricciones
+   !sum(i in A) valor(i)*x(i) = PRESUPUESTO       
+   
+   sum(i in n) x(4,i) = 1
+   
+   sum(i in n) x(i,2) = 1
+   
+   forall(k in n|k<>4 and k<>2)
+   	(sum(i in n ) x(i,k))-(sum(i in n)x(k,i)) = 0
+   
+   	1 - x(7,5)>=x(7,3)
+   	
+    x(7,5)+x(7,3) >= 1
+  	
+   		
+   forall(i in n, j in n) x(i,j) is_binary
+  
+minimize(CostoTotal)
+ 
+ !RESULTADOS------------------------------------------------------------------------------------------------
+  
+  !Impresión del reporte
+  writeln("Solución del Problema")
+  writeln("Status    : ", getProblemStatus(getprobstat))
+  writeln("Gasto total: ", getobjval)
+     
+ forall(i in n,j in n| getsol(x(i,j))=1)
+	 writeln("El camino de el nodo: ",i," al nodo: ",j, " con costo: " , costo(i,j)," esta en el camino mas corto")
+   
+    
+function getProblemStatus(status: integer):string
+   case status of
+	    XPRS_OPT: returned := "Solved to optimality."
+	    XPRS_UNF: returned := "Unfinished"
+	    XPRS_INF: returned := "Infeasible"
+	    XPRS_UNB: returned := "Unbounded"
+    else returned:= "Unknown Status"
+   end-case
+end-function
+  
+end-model
+
