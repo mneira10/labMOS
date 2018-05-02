@@ -1,0 +1,43 @@
+import numpy as np 
+import matplotlib.pyplot as plt 
+
+def sin(w,t):
+    return np.sin(w*t)
+
+xs = np.linspace(0,2*np.pi,100)
+ys1 = sin(1,xs)
+ys2 = sin(2,xs)
+ys3 = sin(3,xs)
+ys4 = sin(4,xs)
+
+
+f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex='col', sharey='row')
+ax1.plot(xs, ys1)
+ax1.set_title('Varias en una misma ventana')
+ax2.plot(xs, ys2)
+ax3.plot(xs,ys3)
+ax4.plot(xs,ys4)
+# plt.plot(xs,ys1)
+# plt.xlabel("x")
+# plt.ylabel("y")
+# plt.title("titulo")
+# plt.savefig("1.png")
+# plt.close()
+# plt.plot(xs,ys2)
+# plt.xlabel("x")
+# plt.ylabel("y")
+# plt.title("titulo")
+# plt.savefig("2.png")
+# plt.close()
+# plt.plot(xs,ys3)
+# plt.xlabel("x")
+# plt.ylabel("y")
+# plt.title("titulo")
+# plt.savefig("3.png")
+# plt.close()
+# plt.plot(xs,ys4)
+# plt.xlabel("x")
+# plt.ylabel("y")
+# plt.title("titulo")
+plt.savefig("4.png")
+plt.close() 
